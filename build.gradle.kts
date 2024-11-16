@@ -16,9 +16,11 @@ dependencies {
     implementation(kotlin("reflect"))
 }
 
+// ใช้แค่ toolchain อย่างเดียว
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 kotlin {
@@ -56,9 +58,8 @@ tasks {
         }
     }
 
+    // ลบ sourceCompatibility และ targetCompatibility ออกจาก compileJava
     compileJava {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
         options.encoding = "UTF-8"
     }
 }
