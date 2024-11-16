@@ -15,5 +15,15 @@
 
         <completion.contributor language="JAVA"
                                 implementationClass="inclub9.intellij.plugin.fieldlabel.completion.FieldLabelCompletionContributor"/>
+
+        <psi.augmentProvider implementation="inclub9.intellij.plugin.fieldlabel.augment.FieldLabelPsiAugmentProvider"/>
+
+        <!-- เพิ่มส่วนนี้ -->
+        <localInspection language="JAVA"
+                         displayName="FieldLabel inspection"
+                         groupName="FieldLabel"
+                         enabledByDefault="true"
+                         level="ERROR"
+                         implementationClass="inclub9.intellij.plugin.fieldlabel.inspection.FieldLabelInspection"/>
     </extensions>
 </idea-plugin>

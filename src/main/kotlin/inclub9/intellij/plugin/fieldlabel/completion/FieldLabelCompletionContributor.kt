@@ -1,14 +1,12 @@
-// FieldLabelCompletionContributor.kt
 package inclub9.intellij.plugin.fieldlabel.completion
 
 import com.intellij.codeInsight.completion.*
 import com.intellij.codeInsight.lookup.LookupElementBuilder
-import com.intellij.icons.AllIcons
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiClass
 import com.intellij.psi.util.PsiUtil
 import com.intellij.util.ProcessingContext
-import inclub9.intellij.plugin.fieldlabel.util.findGeneratedLabelClass
+import inclub9.intellij.plugin.fieldlabel.util.LombokStyle
 
 class FieldLabelCompletionContributor : CompletionContributor() {
     init {
@@ -24,27 +22,18 @@ class FieldLabelCompletionContributor : CompletionContributor() {
                     val containingClass = PsiUtil.getTopLevelClass(position)
 
                     if (containingClass != null) {
-                        // Add completion for generated label constants
-                        addLabelCompletions(containingClass, result)
+                        // Add completion for generated constants directly from the augmented class
+                        val augmentedFields = LombokStyle.augmentClass(containingClass)
+                        augmentedFields.forEach { field ->
+                            result.addElement(
+                                LookupElementBuilder.create(field.name)
+                                    .withTypeText("String")
+                                    .withPresentableText(field.name)
+                            )
+                        }
                     }
                 }
             }
         )
-    }
-
-    private fun addLabelCompletions(psiClass: PsiClass, result: CompletionResultSet) {
-        // Find generated label class and add its constants to completion
-        val labelClass = findGeneratedLabelClass(psiClass.project, psiClass)
-        if (labelClass != null) {
-            for (field in labelClass.fields) {
-                if (field.hasModifierProperty("public") && field.hasModifierProperty("static")) {
-                    result.addElement(
-                        LookupElementBuilder.create(field)
-                            .withTypeText("FieldLabel")
-                            .withIcon(AllIcons.Nodes.Field)
-                    )
-                }
-            }
-        }
     }
 }

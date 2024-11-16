@@ -5,23 +5,25 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiField
-import com.intellij.psi.JavaPsiFacade
-import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.psi.util.PsiUtil
+import inclub9.intellij.plugin.fieldlabel.util.LombokStyle
 
 class FieldLabelAnnotator : Annotator {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         if (element !is PsiField) return
 
-        val annotations = element.annotations
-        val fieldLabel = annotations.find { it.qualifiedName == "inclub9.annotation.FieldLabel" }
+        val annotation = element.annotations.find {
+            it.qualifiedName == "inclub9.annotation.FieldLabel"
+        } ?: return
 
-        if (fieldLabel != null) {
-            val value = fieldLabel.findAttributeValue("value")?.text
-            if (value != null) {
-                holder.newAnnotation(HighlightSeverity.INFORMATION, "FieldLabel: $value")
-                    .range(element.textRange)
-                    .create()
-            }
+        // Show the generated constant names in the editor
+        val value = annotation.findAttributeValue("value")?.text?.trim('"')
+        if (value != null) {
+            val constantName = LombokStyle.camelCaseToUpperUnderscore(element.name)
+            holder.newAnnotation(HighlightSeverity.INFORMATION,
+                "Generates: $constantName = \"$value\"")
+                .range(element.textRange)
+                .create()
         }
     }
 }
