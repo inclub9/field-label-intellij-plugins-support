@@ -16,8 +16,8 @@
         <completion.contributor language="JAVA"
                                 implementationClass="inclub9.intellij.plugin.fieldlabel.completion.FieldLabelCompletionContributor"/>
 
-        <psi.augmentProvider implementation="inclub9.intellij.plugin.fieldlabel.augment.FieldLabelPsiAugmentProvider"/>
-
+        <psi.augmentProvider
+                implementation="inclub9.intellij.plugin.fieldlabel.augment.LombokLikeFieldLabelPsiAugmentProvider"/>
         <!-- เพิ่มส่วนนี้ -->
         <localInspection language="JAVA"
                          displayName="FieldLabel inspection"
