@@ -2,39 +2,43 @@ package inclub9.intellij.plugin.fieldlabel.util
 
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiUtil
-import com.jetbrains.rd.util.ConcurrentHashMap
 
 /**
  * Augments PsiClass with generated fields from FieldLabel annotations
  * Similar to how Lombok handles its generated members
  */
 object LombokStyle {
-    private val fieldCache = ConcurrentHashMap<String, List<PsiField>>()
-
     fun augmentClass(psiClass: PsiClass): List<PsiField> {
-        val cacheKey = "${psiClass.qualifiedName}:${psiClass.modificationStamp}"
+        val project = psiClass.project
+        val factory = JavaPsiFacade.getElementFactory(project)
+        val augmentedFields = mutableListOf<PsiField>()
 
-        return fieldCache.computeIfAbsent(cacheKey) {
-            generateFields(psiClass)
-        }
-    }
-
-    private fun generateFields(psiClass: PsiClass): List<PsiField> {
-        val fields = mutableListOf<PsiField>()
-        val factory = JavaPsiFacade.getElementFactory(psiClass.project)
-
+        // Find all fields with @FieldLabel
         psiClass.fields.forEach { field ->
-            field.getAnnotation("inclub9.annotation.FieldLabel")?.let { annotation ->
-                val value = annotation.findAttributeValue("value")?.text?.trim('"') ?: return@let
-                // สร้าง fields...
+            field.annotations.find { it.qualifiedName == "inclub9.annotation.FieldLabel" }?.let { annotation ->
+                val labelValue = annotation.findAttributeValue("value")?.text?.trim('"') ?: return@let
+
+                // Generate constant field
+                val constantName = camelCaseToUpperUnderscore(field.name)
+                val constantField = factory.createFieldFromText(
+                    "public static final String $constantName = \"$labelValue\";",
+                    psiClass
+                )
+                augmentedFields.add(constantField)
+
+                // Generate original field name constant
+                val originalField = factory.createFieldFromText(
+                    "public static final String ${field.name} = \"$labelValue\";",
+                    psiClass
+                )
+                augmentedFields.add(originalField)
             }
         }
 
-        return fields
+        return augmentedFields
     }
 
-    // Clear cache เมื่อ class มีการเปลี่ยนแปลง
-    fun clearCache(psiClass: PsiClass) {
-        fieldCache.remove("${psiClass.qualifiedName}:${psiClass.modificationStamp}")
+    fun camelCaseToUpperUnderscore(input: String): String {
+        return input.replace(Regex("([a-z])([A-Z])"), "$1_$2").uppercase()
     }
 }
