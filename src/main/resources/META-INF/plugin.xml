@@ -1,0 +1,19 @@
+<idea-plugin>
+    <id>inclub9.intellij.plugin.fieldlabel</id>
+    <name>FieldLabel Support</name>
+    <vendor>InClub9</vendor>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <annotator language="JAVA"
+                   implementationClass="inclub9.intellij.plugin.fieldlabel.annotator.FieldLabelAnnotator"/>
+
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="inclub9.intellij.plugin.fieldlabel.provider.FieldLabelLineMarkerProvider"/>
+
+        <completion.contributor language="JAVA"
+                                implementationClass="inclub9.intellij.plugin.fieldlabel.completion.FieldLabelCompletionContributor"/>
+    </extensions>
+</idea-plugin>

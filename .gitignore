@@ -1,0 +1,51 @@
+# ไฟล์และโฟลเดอร์ที่สร้างโดย Gradle
+.gradle/
+build/
+
+# ไฟล์ Cache ของ Gradle
+**/out/
+.gradle/caches/
+.gradle/daemon/
+.gradle/native/
+.gradle/taskHistory/
+.gradle/gradle-app.setting
+.gradle/kotlin/
+.gradle/worker/
+.gradle/compile-testing/
+
+# Gradle Wrapper
+gradle/wrapper/gradle-wrapper.properties
+gradle/wrapper/gradle-wrapper.jar
+
+# ไฟล์ที่เกี่ยวข้องกับ IntelliJ IDEA/Android Studio
+*.iml
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/gradle.xml
+.idea/**/libraries/
+.idea/shelf/
+*.ipr
+*.iws
+
+# ไฟล์ระบบปฏิบัติการ
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Java และ JVM
+*.class
+*.jar
+*.war
+*.ear
+
+# ไฟล์สำหรับ Debugging
+*.hprof
+
+# Temporary Files
+*.tmp
+*.swp
+*.swo
