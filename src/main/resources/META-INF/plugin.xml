@@ -1,26 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
-    <id>inclub9.intellij.plugin.fieldlabel</id>
+    <id>inclub9.fieldlabel</id>
     <name>FieldLabel Support</name>
-    <vendor>InClub9</vendor>
+    <vendor>inclub9</vendor>
+    <description>Provides IDE support for @FieldLabel annotation</description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <annotator language="JAVA"
-                   implementationClass="inclub9.intellij.plugin.fieldlabel.annotator.FieldLabelAnnotator"/>
-
-        <codeInsight.lineMarkerProvider language="JAVA"
-                                        implementationClass="inclub9.intellij.plugin.fieldlabel.provider.FieldLabelLineMarkerProvider"/>
-
-        <completion.contributor language="JAVA"
-                                implementationClass="inclub9.intellij.plugin.fieldlabel.completion.FieldLabelCompletionContributor"/>
-
-        <psi.augmentProvider
-                implementation="inclub9.intellij.plugin.fieldlabel.augment.LombokLikeFieldLabelPsiAugmentProvider"/>
-        <!-- เพิ่มส่วนนี้ -->
+        <lang.psiAugmentProvider implementation="inclub9.intellij.plugin.fieldlabel.FieldLabelContributor"/>
         <localInspection language="JAVA"
-                         displayName="FieldLabel inspection"
+                         displayName="FieldLabel Inspection"
                          groupName="FieldLabel"
                          enabledByDefault="true"
                          level="ERROR"

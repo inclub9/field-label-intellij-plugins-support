@@ -1,65 +1,72 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
-    id("org.jetbrains.intellij") version "1.17.2"
+    id("org.jetbrains.intellij") version "1.16.1"
+    id("org.jetbrains.kotlin.jvm") version "1.9.22"
 }
 
-group = "inclub9.intellij.plugin"
-version = "1.0.0"
+group = "inclub9"
+version = "1.0-SNAPSHOT"
+
+// ใช้ Java 17 แทน 23
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+        vendor.set(JvmVendorSpec.matching("Oracle"))
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
-}
-
-// ใช้แค่ toolchain อย่างเดียว
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+// ปรับ Kotlin compile options เป็น Java 17
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+        apiVersion = "1.9"
+        languageVersion = "1.9"
+        freeCompilerArgs = listOf("-Xjsr305=strict")
     }
-}
-
-kotlin {
-    jvmToolchain(17)
 }
 
 intellij {
-    version.set("2023.3.8")
+    version.set("2023.3.3")
     type.set("IC")
-    plugins.set(listOf("com.intellij.java"))
+    updateSinceUntilBuild.set(false)
+    plugins.set(listOf(
+        "com.intellij.java",
+        "org.jetbrains.kotlin"
+    ))
 }
 
 tasks {
-    runIde {
-        maxHeapSize = "2g"
-        jvmArgs("-XX:MaxMetaspaceSize=512m")
-    }
-
     buildSearchableOptions {
         enabled = false
     }
 
     patchPluginXml {
-        version.set("${project.version}")
         sinceBuild.set("233")
-        untilBuild.set("242.*")
+        untilBuild.set("241.*")
     }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "17"
-            apiVersion = "1.8"
-            languageVersion = "1.8"
-            freeCompilerArgs = listOf("-Xjvm-default=all")
-        }
+    runIde {
+        jvmArgs = listOf(
+            "-XX:+UseG1GC",
+            "-Xmx2g",
+            "--add-exports=java.base/jdk.internal.vm.annotation=ALL-UNNAMED",
+            "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
+            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
+        )
+        autoReloadPlugins.set(true)
     }
 
-    // ลบ sourceCompatibility และ targetCompatibility ออกจาก compileJava
-    compileJava {
-        options.encoding = "UTF-8"
+    wrapper {
+        gradleVersion = "8.5"
     }
+}
+
+dependencies {
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
+    testImplementation("junit:junit:4.13.2")
 }
