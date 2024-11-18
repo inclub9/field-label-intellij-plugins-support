@@ -1,72 +1,57 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.16.1"
     id("org.jetbrains.kotlin.jvm") version "1.9.22"
+    id("org.jetbrains.intellij") version "1.17.2"
 }
 
-group = "inclub9"
-version = "1.0-SNAPSHOT"
-
-// ใช้ Java 17 แทน 23
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-        vendor.set(JvmVendorSpec.matching("Oracle"))
-    }
-}
+group = "com.github.inclub9"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
-}
-
-// ปรับ Kotlin compile options เป็น Java 17
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
-        apiVersion = "1.9"
-        languageVersion = "1.9"
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-    }
-}
-
-intellij {
-    version.set("2023.3.3")
-    type.set("IC")
-    updateSinceUntilBuild.set(false)
-    plugins.set(listOf(
-        "com.intellij.java",
-        "org.jetbrains.kotlin"
-    ))
-}
-
-tasks {
-    buildSearchableOptions {
-        enabled = false
-    }
-
-    patchPluginXml {
-        sinceBuild.set("233")
-        untilBuild.set("241.*")
-    }
-
-    runIde {
-        jvmArgs = listOf(
-            "-XX:+UseG1GC",
-            "-Xmx2g",
-            "--add-exports=java.base/jdk.internal.vm.annotation=ALL-UNNAMED",
-            "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
-            "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED"
-        )
-        autoReloadPlugins.set(true)
-    }
-
-    wrapper {
-        gradleVersion = "8.5"
-    }
+    maven("https://jitpack.io")
+    maven("https://plugins.gradle.org/m2/")
+    maven("https://cache-redirector.jetbrains.com/plugins.jetbrains.com/maven")
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-    testImplementation("junit:junit:4.13.2")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("org.projectlombok:lombok:1.18.32")
+    annotationProcessor("org.projectlombok:lombok:1.18.32")
+    compileOnly("com.github.inclub9:field-label:2.5.1")
+}
+
+// Configure Gradle IntelliJ Plugin
+intellij {
+    version.set("2024.1.1")
+    type.set("IC") // IntelliJ IDEA Community Edition
+    plugins.set(listOf(
+        "com.intellij.java"
+    ))
+    updateSinceUntilBuild.set(false)
+}
+
+tasks {
+    patchPluginXml {
+        sinceBuild.set("241")
+        untilBuild.set("241.*")
+    }
+
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "17"
+            languageVersion = "1.9"
+            apiVersion = "1.9"
+        }
+    }
+
+    runIde {
+        jvmArgs("-Xmx2g")
+        autoReloadPlugins.set(true)  // เพิ่มการ auto reload plugins
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
